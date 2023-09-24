@@ -5,4 +5,11 @@ Items: {
 		DisplayName: Example Sword
 		Tooltip: ""
 	}
+
+	Bat: {
+		DisplayName: Bat
+		Tooltip: ""
+	}
 }
+
+Projectiles.Ball.DisplayName: Ball
