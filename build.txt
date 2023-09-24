@@ -1,0 +1,3 @@
+displayName = Baseball
+author = Max, Miles, Will
+version = 0.1
