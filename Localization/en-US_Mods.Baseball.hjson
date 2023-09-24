@@ -10,6 +10,11 @@ Items: {
 		DisplayName: Bat
 		Tooltip: ""
 	}
+
+	BallAmmo: {
+		DisplayName: Ball Ammo
+		Tooltip: ""
+	}
 }
 
 Projectiles.Ball.DisplayName: Ball

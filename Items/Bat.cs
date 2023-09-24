@@ -25,7 +25,8 @@ namespace Baseball.Items
             Item.value = Item.buyPrice(copper: 50);
             Item.rare = ItemRarityID.Gray;
 
-            Item.shoot = ModContent.ProjectileType<Ball>();
+            Item.shoot = ModContent.ProjectileType<Ball>(); // need to define what gets shot, as well as the ammo used
+            Item.useAmmo = ModContent.ItemType<BallAmmo>();
         }
 
         public override void AddRecipes()
