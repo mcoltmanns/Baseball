@@ -2,7 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Baseball.Items
+namespace Baseball.Content.Items.Weapons
 {
 	public class ExampleSword : ModItem
 	{
