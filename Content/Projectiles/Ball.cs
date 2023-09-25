@@ -4,7 +4,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Baseball.Projectiles
+namespace Baseball.Content.Projectiles
 {
     public class Ball : ModProjectile
     { public override void SetDefaults()

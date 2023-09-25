@@ -1,11 +1,8 @@
-using Baseball.Projectiles;
-using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace Baseball.Items
+namespace Baseball.Content.Items.Weapons
 {
     public class Bat : ModItem{
         public override void SetDefaults()
@@ -25,8 +22,8 @@ namespace Baseball.Items
             Item.value = Item.buyPrice(copper: 50);
             Item.rare = ItemRarityID.Gray;
 
-            Item.shoot = ModContent.ProjectileType<Ball>(); // need to define what gets shot, as well as the ammo used
-            Item.useAmmo = ModContent.ItemType<BallAmmo>();
+            Item.shoot = ModContent.ProjectileType<Projectiles.Ball>(); // need to define what gets shot, as well as the ammo used
+            Item.useAmmo = ModContent.ItemType<Ammo.BallAmmo>();
         }
 
         public override void AddRecipes()
