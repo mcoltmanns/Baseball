@@ -1,4 +1,7 @@
+using Baseball.Content.UI;
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,8 +13,8 @@ namespace Baseball.Content.Items.Weapons
             // width/height?
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20; // cooldown
-            Item.useAnimation = 20; // animation time
+            Item.useTime = 10; // cooldown
+            Item.useAnimation = 10; // animation time
             Item.autoReuse = false;
 
             Item.DamageType = DamageClass.Melee;
@@ -22,7 +25,7 @@ namespace Baseball.Content.Items.Weapons
             Item.value = Item.buyPrice(copper: 50);
             Item.rare = ItemRarityID.Gray;
 
-            Item.shoot = ModContent.ProjectileType<Projectiles.Ball>(); // need to define what gets shot, as well as the ammo used
+            Item.shoot = ModContent.ProjectileType<Projectiles.Ball>(); // need to define what gets shot, as well as the ammo used.
             Item.useAmmo = ModContent.ItemType<Ammo.BallAmmo>();
         }
 
