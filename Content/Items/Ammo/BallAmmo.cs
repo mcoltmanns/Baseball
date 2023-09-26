@@ -11,7 +11,7 @@ namespace Baseball.Content.Items.Ammo
         {
             Item.ammo = Item.type; // defining ammo
             Item.shoot = ModContent.ProjectileType<Projectiles.Ball>();
-
+            Item.maxStack = Item.CommonMaxStack;
             Item.shootSpeed = 16f;
         }
     }
