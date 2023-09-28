@@ -30,6 +30,7 @@ namespace Baseball.Common.Players
             isCalibratingPower = false;
         }
 
+        // would be good to somehow move this to right click?
         public override bool Shoot(Item item, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if(item.type != ModContent.ItemType<Bat>()) return true; // don't want to modify non-bat shooting behaviors
