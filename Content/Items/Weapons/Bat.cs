@@ -37,7 +37,7 @@ namespace Baseball.Content.Items.Weapons
             Item.rare = ItemRarityID.Gray;
 
             Item.shoot = 10; // 10 is convention. set to 0 for no shooting
-            Item.useAmmo = ModContent.ItemType<Ammo.BallAmmo>(); // ammo shot is determined here
+            Item.useAmmo = ModContent.ItemType<Ammo.BasicBallAmmo>(); // ammo shot is determined here
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

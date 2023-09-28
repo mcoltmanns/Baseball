@@ -35,11 +35,17 @@ Items: {
 		DisplayName: Basic Bat
 		Tooltip: ""
 	}
+
+	BasicBallAmmo: {
+		DisplayName: Basic Ball Ammo
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
 	Ball.DisplayName: Ball
 	HostileBall.DisplayName: Hostile Ball
+	BasicBall.DisplayName: Basic Ball
 }
 
 UI.BatShotMeter: Mods.Baseball.UI.BatShotMeter

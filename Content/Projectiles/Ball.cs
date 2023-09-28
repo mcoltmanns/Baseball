@@ -7,10 +7,11 @@ using Terraria.ModLoader;
 
 namespace Baseball.Content.Projectiles
 {
-    public class Ball : ModProjectile
+    public abstract class Ball : ModProjectile
     {
 		public float bounceRestitution;
 
+		// Override me!
 		public override void SetDefaults()
         {
 			Projectile.arrow = true;
