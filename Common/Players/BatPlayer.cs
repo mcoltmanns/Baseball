@@ -13,7 +13,7 @@ namespace Baseball.Common.Players
     player as a place to put all the cross-class fields needed to make the shot power feature functional.
     Working instance can be got like this: var foo = Main.LocalPlayer.GetModPlayer<ShotPowerMeterPlayer>();
     */
-    public class ShotPowerPlayer : ModPlayer
+    public class BatPlayer : ModPlayer
     {
         public double power; // how much shot power does this player have stored?
         private const double MIN_POWER = 0;
@@ -22,24 +22,29 @@ namespace Baseball.Common.Players
         public bool isFirstShot;
         public bool isCalibratingPower;
 
+        public bool isInRangedMode;
+
         public override void Initialize()
         {
             power = MIN_POWER;
             powerRate = 1;
             isFirstShot = true;
             isCalibratingPower = false;
+
+            isInRangedMode = false;
         }
 
         public void CalibratePower(GameTime deltaTime)
         {
             power += powerRate * deltaTime.ElapsedGameTime.TotalSeconds;
-            // if we are at the end of the meter, reverse the direction of growth. also clamp. clamp shouldn't be needed, but is good for peace of mind
+            // if we are at the end of the meter, reverse the direction of growth. also clamp.
             if(power > MAX_POWER)
             {
                 power = 1;
                 powerRate = -powerRate;
             }
-            else if(power < MIN_POWER){
+            else if(power < MIN_POWER)
+            {
                 power = 0;
                 powerRate = -powerRate;
             }
