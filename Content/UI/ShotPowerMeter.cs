@@ -50,7 +50,9 @@ namespace Baseball.Content.UI
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if(Main.LocalPlayer.HeldItem.ModItem is not Bat) return; // only want to draw the meter if we're holding the bat
+            var modPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>();
+
+            if(Main.LocalPlayer.HeldItem.ModItem is not Bat || !modPlayer.isInRangedMode) return; // only want to draw the meter if we're holding the bat, or in ranged mode
 
             base.Draw(spriteBatch);
         }
@@ -80,9 +82,10 @@ namespace Baseball.Content.UI
 
         public override void Update(GameTime gameTime)
         {
+            var modPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>();
+
             if(Main.LocalPlayer.HeldItem.ModItem is not Bat) return; // only need to do anything if we're holding a bat
 
-            var modPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>();
             powerText.SetText(((int)(modPlayer.power * 100)).ToString());
 
             if(modPlayer.isCalibratingPower) modPlayer.CalibratePower(gameTime); // if we are calibrating power, tell the modplayer to do that. can't do that in the modplayer because there's no Update() there

@@ -22,8 +22,7 @@ namespace Baseball.Common.Players
         public bool isFirstShot;
         public bool isCalibratingPower;
 
-        public bool isReflecting;
-        public bool canReflect;
+        public bool isInRangedMode;
 
         public override void Initialize()
         {
@@ -32,8 +31,7 @@ namespace Baseball.Common.Players
             isFirstShot = true;
             isCalibratingPower = false;
 
-            isReflecting = false;
-            canReflect = true;
+            isInRangedMode = false;
         }
 
         public void CalibratePower(GameTime deltaTime)
