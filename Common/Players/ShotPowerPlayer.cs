@@ -30,37 +30,16 @@ namespace Baseball.Common.Players
             isCalibratingPower = false;
         }
 
-        public override bool Shoot(Item item, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            if(item.type != ModContent.ItemType<Bat>()) return true; // don't want to modify non-bat shooting behaviors
-            // maybe have to do the looping in here somehow? but no way to detect mouse down/up
-            if(isFirstShot) // start the power getting loop, but don't shoot
-            {
-                isFirstShot = false;
-                power = MIN_POWER;
-                // power loop handled by the shotPowerMeter - via isCalibratingPower as flag
-                isCalibratingPower = true;
-            }
-            else // power is dialled, now we can shoot
-            {
-                isFirstShot = true;
-                isCalibratingPower = false;
-                Vector2 velocityWithPower = new Vector2((float)(velocity.X * power), (float)(velocity.Y * power));
-                Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * power), knockback, source.Player.whoAmI);
-            }
-            return false;
-        }
-
         public void CalibratePower(GameTime deltaTime)
         {
             power += powerRate * deltaTime.ElapsedGameTime.TotalSeconds;
             // if we are at the end of the meter, reverse the direction of growth. also clamp. clamp shouldn't be needed, but is good for peace of mind
-            if(power > 1)
+            if(power > MAX_POWER)
             {
                 power = 1;
                 powerRate = -powerRate;
             }
-            else if(power < 0){
+            else if(power < MIN_POWER){
                 power = 0;
                 powerRate = -powerRate;
             }

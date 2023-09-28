@@ -15,6 +15,21 @@ Items: {
 		DisplayName: Ball Ammo
 		Tooltip: ""
 	}
+
+	OtherBat: {
+		DisplayName: Other Bat
+		Tooltip: ""
+	}
+
+	ImplementedBat: {
+		DisplayName: Implemented Bat
+		Tooltip: ""
+	}
+
+	ImplementedBatTwo: {
+		DisplayName: Implemented Bat Two
+		Tooltip: ""
+	}
 }
 
 Projectiles.Ball.DisplayName: Ball
