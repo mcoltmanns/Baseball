@@ -1,4 +1,3 @@
-using System.Transactions;
 using Baseball.Common.Players;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -15,62 +14,107 @@ namespace Baseball.Content.Items.Weapons
     public abstract class Bat : ModItem {
         public double globalVelocityModifier = 1;
 
-        //BatPlayer batPlayer;
         // don't forget to override!
-        private double powerMeterRate = 1; // how fact does this bat's power meter oscillate (units/sec)
+        /// <summary>
+        /// Oscillation speed of this bat's power meter in units/second.
+        /// </summary>
+        public abstract double PowerMeterRate { get; }
+        /// <summary>
+        /// The ammoId of the ammunition this bat will shoot in ranged mode. Should be provided via ModContent.ItemType<...>();
+        /// </summary>
+        public abstract int AmmoId { get; }
+        /// <summary>
+        /// This bat's use cooldown. This bat's animation time is equal to its use time.
+        /// </summary>
+        public abstract int UseTime { get; }
+        /// <summary>
+        /// This bat's base damage in melee mode.
+        /// </summary>
+        public abstract int Damage { get; }
+        /// <summary>
+        /// This bat's knockback in melee mode. Maximum is 20.
+        /// </summary>
+        public abstract int Knockback { get; }
+        /// <summary>
+        /// This bat's base crit chance in melee mode. Remember that the player already has a crit chance of 4!
+        /// </summary>
+        public abstract int CritChance { get; }
+        /// <summary>
+        /// This bat's price in copper coins. 1 platinum = 100 gold = 10,000 silver = 1,000,000 copper.
+        /// </summary>
+        public abstract int Price { get; }
+        /// <summary>
+        /// Rarity of this bat. Should be set to one of the values in ItemRarityID.
+        /// </summary>
+        public abstract int Rarity { get; }
+        /// <summary>
+        /// Sound this bat makes when used. Should return either an existing SoundID entry or a new Terraria.Audio.SoundStyle for custom sounds. 
+        /// Return null for default behavior
+        /// </summary>
+        public abstract Terraria.Audio.SoundStyle UseSoundId { get; }
 
-        // Override me!
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
             Item.holdStyle = ItemHoldStyleID.HoldGuitar; // guitar looks pretty solid
-            Item.useTime = 10; // cooldown
-            Item.useAnimation = 10; // animation time
-            Item.autoReuse = false;
+            Item.useTime = UseTime; // cooldown
+            Item.useAnimation = UseTime; // animation time - should be equal to cooldown
+            Item.autoReuse = true;
 
             Item.DamageType = DamageClass.Melee;
-            Item.damage = 50;
-            Item.knockBack = 6;
-            Item.crit = 6; // crit chance
+            Item.damage = Damage;
+            Item.knockBack = Knockback;
+            Item.crit = CritChance;
 
-            Item.value = Item.buyPrice(copper: 50);
-            Item.rare = ItemRarityID.Gray;
+            Item.value = Item.buyPrice(copper: Price);
+            Item.rare = Rarity;
 
-            Item.shoot = 10; // 10 is convention. set to 0 for no shooting
-            Item.useAmmo = ModContent.ItemType<Ammo.BasicBallAmmo>(); // ammo shot is determined here
+            Item.shoot = ProjectileID.PurificationPowder; // ProjectileID.PurificationPowder (10) is convention. set to 0 for no shooting
+            Item.useAmmo = AmmoId;
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            var batPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>(); // despite what it looks like, this cannot be a class field. compiler does not like that at all
-
-            if(!batPlayer.isInRangedMode) return false; // if not in ranged mode do nothing
-
-            if(batPlayer.isFirstShot) // start the power getting loop, but don't shoot
+            if(Main.myPlayer == player.whoAmI) // multiplayer safety. only the owner of the projectile should spawn it. still unclear on how this works! (projectiles aren't synced until after spawn maybe?)
+            // if you want to spawn a projectile from an npc, check if(Main.netMode != NetmodeID.MultiplayerClient) - spawns the projectile only on the server's instance
             {
-                batPlayer.powerRate = powerMeterRate;
-                batPlayer.isFirstShot = false;
-                batPlayer.power = 0;
-                // power loop handled by the shotPowerMeter - via isCalibratingPower as flag
-                batPlayer.isCalibratingPower = true;
-            }
-            else // power is dialled, now we can shoot
-            {
-                batPlayer.isFirstShot = true;
-                batPlayer.isCalibratingPower = false;
-                Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI);
-                batPlayer.power = 0;
+                var batPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>(); // despite what it looks like, this cannot be a class field. compiler does not like that at all
+
+                if(!batPlayer.isInRangedMode) return false; // if not in ranged mode do nothing
+
+                if(batPlayer.isFirstShot) // start the power getting loop, but don't shoot
+                {
+                    batPlayer.powerRate = PowerMeterRate;
+                    batPlayer.isFirstShot = false;
+                    batPlayer.power = 0;
+                    // power loop handled by the shotPowerMeter - via isCalibratingPower as flag
+                    batPlayer.isCalibratingPower = true;
+                }
+                else // power is dialled, now we can shoot
+                {
+                    batPlayer.isFirstShot = true;
+                    batPlayer.isCalibratingPower = false;
+                    Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
+                    Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI);
+                    batPlayer.power = 0;
+                }
             }
             return false;
         }
 
-        // shoot balls on right click. return true to override default behavior
+        // switch to ranged mode on right click
         public override bool AltFunctionUse(Player player)
         {
             var batPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>();
-            batPlayer.isInRangedMode = !batPlayer.isInRangedMode;
-            return false;
+
+            batPlayer.isInRangedMode = !batPlayer.isInRangedMode; // toggle mode
+
+            Item.autoReuse = !batPlayer.isInRangedMode; // don't want auto reuse if in ranged mode, want it in melee mode
+
+            if(batPlayer.isInRangedMode) Item.useAmmo = AmmoId; // if in ranged mode, use ammo. if not, don't require ammo
+            else Item.useAmmo = AmmoID.None;
+
+            return false; // override default
         }
     }
 }
