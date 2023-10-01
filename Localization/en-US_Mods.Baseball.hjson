@@ -40,12 +40,18 @@ Items: {
 		DisplayName: Basic Ball Ammo
 		Tooltip: ""
 	}
+
+	EephusPitch: {
+		DisplayName: Eephus Pitch
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
 	Ball.DisplayName: Ball
 	HostileBall.DisplayName: Hostile Ball
 	BasicBall.DisplayName: Basic Ball
+	EephusBall.DisplayName: Eephus Ball
 }
 
 UI.BatShotMeter: Mods.Baseball.UI.BatShotMeter
