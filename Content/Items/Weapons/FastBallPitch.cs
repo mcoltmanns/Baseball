@@ -9,11 +9,11 @@ using Terraria.ModLoader;
 
 namespace Baseball.Content.Items.Weapons
 {
-	public class EephusPitch : ModItem
+	public class FastBallPitch : ModItem
 	{
 		public override void SetDefaults() {
-            Item.useTime = 20;
-            Item.useAnimation = 20;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.DamageType = DamageClass.Magic;
             Item.noMelee = true;
@@ -22,7 +22,9 @@ namespace Baseball.Content.Items.Weapons
 			Item.height = 40;
             Item.mana = 10;
 			Item.UseSound = SoundID.Item71;
-
+            Item.shootSpeed = 8;
+            Item.damage = 10;
+            //Item.shoot = ModContent.ProjectileType<FastBall>();
 
 			Item.SetShopValues(ItemRarityColor.LightRed4, 10000);
 		}
@@ -33,18 +35,11 @@ namespace Baseball.Content.Items.Weapons
 				.AddTile(TileID.WorkBenches)
 				.Register();
 		}
-        
+
         public override void OnConsumeMana(Player player, int manaConsumed)
         {
-            float x1 = player.Center.X;
-            float y1 = -player.Center.Y;
-            float x2 = Main.MouseWorld.X;
-            float y2 = -Main.MouseWorld.Y;
-            float g = 0.4f / 2;
-            float yVel = (float) Math.Sqrt(g * 2.4 * Math.Max(Math.Abs(x2-x1)/2, y2-y1));
-            float t = (yVel / g) + (float) Math.Sqrt((2 / g) * (y1 - y2 + yVel * yVel / (2 * g)));
-            float xVel =  (x2 - x1) / t;
-            Projectile.NewProjectile(player.GetSource_FromThis(), player.Center.X, player.Center.Y, xVel, -yVel, ModContent.ProjectileType<EephusBall>(), 10, 10, player.whoAmI);
+            Item.shoot = ModContent.ProjectileType<FastBall>();
+            base.OnConsumeMana(player, manaConsumed);
         }
     }
 }
