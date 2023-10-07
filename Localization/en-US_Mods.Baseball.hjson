@@ -50,6 +50,16 @@ Items: {
 		DisplayName: Fast Ball Pitch
 		Tooltip: ""
 	}
+
+	RiserPitch: {
+		DisplayName: Riser Pitch
+		Tooltip: ""
+	}
+
+	BeanBallPitch: {
+		DisplayName: Bean Ball Pitch
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
@@ -58,6 +68,8 @@ Projectiles: {
 	BasicBall.DisplayName: Basic Ball
 	EephusBall.DisplayName: Eephus Ball
 	FastBall.DisplayName: Fast Ball
+	Riser.DisplayName: Riser
+	BeanBall.DisplayName: Bean Ball
 }
 
 UI.BatShotMeter: Mods.Baseball.UI.BatShotMeter
