@@ -21,8 +21,10 @@ namespace Baseball.Common.Players
         public double powerRate; // how fast does this player's shot power change? (points/sec)
         public bool isFirstShot;
         public bool isCalibratingPower;
+        public (double, double) sweetSpotRange; // what is the range on the sweet spot?
 
         public bool isInRangedMode;
+        public bool isInSweetSpot;
 
         public override void Initialize()
         {
@@ -32,11 +34,13 @@ namespace Baseball.Common.Players
             isCalibratingPower = false;
 
             isInRangedMode = false;
+            isInSweetSpot = false;
         }
 
         public void CalibratePower(GameTime deltaTime)
         {
             power += powerRate * deltaTime.ElapsedGameTime.TotalSeconds;
+            //isInSweetSpot = true;
             // if we are at the end of the meter, reverse the direction of growth. also clamp.
             if(power > MAX_POWER)
             {
@@ -48,6 +52,7 @@ namespace Baseball.Common.Players
                 power = 0;
                 powerRate = -powerRate;
             }
+            isInSweetSpot = power >= sweetSpotRange.Item1 && power <= sweetSpotRange.Item2;
         }
     }
 }

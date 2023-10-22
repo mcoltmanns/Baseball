@@ -86,6 +86,9 @@ namespace Baseball.Content.UI
 
             if(Main.LocalPlayer.HeldItem.ModItem is not Bat) return; // only need to do anything if we're holding a bat
 
+            if(modPlayer.isInSweetSpot) powerText.TextColor = Color.Red; // set text color based on sweet spot
+            else powerText.TextColor = Color.White;
+
             powerText.SetText(((int)(modPlayer.power * 100)).ToString());
 
             if(modPlayer.isCalibratingPower) modPlayer.CalibratePower(gameTime); // if we are calibrating power, tell the modplayer to do that. can't do that in the modplayer because there's no Update() there

@@ -52,6 +52,11 @@ namespace Baseball.Content.Items.Weapons
         /// Return null for default behavior
         /// </summary>
         public abstract Terraria.Audio.SoundStyle UseSoundId { get; }
+        /// <summary>
+        /// Location of this bat's sweet spot range. Hitting a shot in the sweet spot gives special effects.
+        /// First value is start of the range, second value is end of range (both inclusive)
+        /// </summary>
+        public abstract (double, double) SweetSpotRange { get; }
 
         public override void SetDefaults()
         {
@@ -84,6 +89,7 @@ namespace Baseball.Content.Items.Weapons
 
                 if(batPlayer.isFirstShot) // start the power getting loop, but don't shoot
                 {
+                    batPlayer.sweetSpotRange = SweetSpotRange;
                     batPlayer.powerRate = PowerMeterRate;
                     batPlayer.isFirstShot = false;
                     batPlayer.power = 0;
@@ -94,12 +100,38 @@ namespace Baseball.Content.Items.Weapons
                 {
                     batPlayer.isFirstShot = true;
                     batPlayer.isCalibratingPower = false;
-                    Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                    Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI);
+                    // in sweet spot
+                    if(batPlayer.power >= SweetSpotRange.Item1 && batPlayer.power <= SweetSpotRange.Item2)
+                    {
+                        SweetSpot(source, position, velocity, type, damage, knockback, batPlayer.power);
+                    }
+                    // missed sweet spot
+                    else
+                    {
+                        Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
+                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI);
+                    }
                     batPlayer.power = 0;
+                    batPlayer.isInSweetSpot = false;
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Can be overriden to implement special behavior on sweet spot hit.
+        /// </summary>
+        /// <param name="source">Source entity. Do not modify</param>
+        /// <param name="position">Origin position</param>
+        /// <param name="velocity">Origin velocity, e.g. if the player was moving</param>
+        /// <param name="type">Do not modify</param>
+        /// <param name="damage">Base damage. Set by the bat, can be modified.</param>
+        /// <param name="knockback">Base knockback. Set by the bat, can be modified.</param>
+        /// <param name="hitPower">Hit power, determined by the power meter</param>
+        public virtual void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback, double hitPower)
+        {
+            Vector2 velocityWithPower = new((float)(velocity.X * hitPower * globalVelocityModifier), (float)(velocity.Y * hitPower * globalVelocityModifier));
+            Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * hitPower), knockback, source.Player.whoAmI);
         }
 
         // switch to ranged mode on right click

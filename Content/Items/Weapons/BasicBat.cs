@@ -1,4 +1,6 @@
 using Baseball.Content.Items.Ammo;
+using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -15,5 +17,11 @@ namespace Baseball.Content.Items.Weapons
         public override int Price => 10000;
         public override int Rarity => ItemRarityID.Green;
         public override Terraria.Audio.SoundStyle UseSoundId => SoundID.Item1;
+        public override (double, double) SweetSpotRange => (0.75, 1);
+
+        public override void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback, double hitPower)
+        {
+            base.SweetSpot(source, position, velocity, type, damage, knockback, hitPower);
+        }
     }
 }

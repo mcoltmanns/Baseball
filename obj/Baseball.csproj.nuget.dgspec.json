@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj": {}
+    "C:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj": {}
   },
   "projects": {
-    "c:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj": {
+    "C:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj",
+        "projectUniqueName": "C:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj",
         "projectName": "Baseball",
-        "projectPath": "c:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj",
+        "projectPath": "C:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\Baseball.csproj",
         "packagesPath": "C:\\Users\\mcolt\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\obj\\",
+        "outputPath": "C:\\Users\\mcolt\\Documents\\My Games\\Terraria\\tModLoader\\ModSources\\Baseball\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mcolt\\AppData\\Roaming\\NuGet\\NuGet.Config"
