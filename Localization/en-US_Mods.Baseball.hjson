@@ -40,6 +40,11 @@ Items: {
 		DisplayName: Basic Ball Ammo
 		Tooltip: ""
 	}
+
+	CorkedBat: {
+		DisplayName: Corked Bat
+		Tooltip: ""
+	}
 }
 
 Projectiles: {

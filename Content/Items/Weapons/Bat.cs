@@ -1,7 +1,6 @@
 using System;
 using Baseball.Common.Players;
 using Microsoft.Xna.Framework;
-using Steamworks;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -64,8 +63,6 @@ namespace Baseball.Content.Items.Weapons
         /// </summary>
         public abstract double Wobble { get; }
 
-        private Random rand;
-
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
@@ -84,8 +81,6 @@ namespace Baseball.Content.Items.Weapons
 
             Item.shoot = ProjectileID.PurificationPowder; // ProjectileID.PurificationPowder (10) is convention. set to 0 for no shooting
             Item.useAmmo = AmmoId;
-
-            rand = new Random();
         }
 
         public override void OnConsumeAmmo(Item ammo, Player player)
@@ -119,17 +114,16 @@ namespace Baseball.Content.Items.Weapons
                 {
                     batPlayer.isFirstShot = true;
                     batPlayer.isCalibratingPower = false;
-                    Vector2 wobble = new((float)(rand.NextDouble() * Wobble), (float)(rand.NextDouble() * Wobble)); // how much to deviate?
                     // in sweet spot
                     if(batPlayer.power >= SweetSpotRange.Item1 && batPlayer.power <= SweetSpotRange.Item2)
                     {
-                        SweetSpot(source, position, velocity, wobble, type, damage, knockback, batPlayer.power);
+                        SweetSpot(source, position, velocity, type, damage, knockback, batPlayer.power);
                     }
                     // missed sweet spot
                     else
                     {
                         Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower + wobble, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
+                        Projectile.NewProjectile(source, source.Player.Center, ApplyWobble(velocityWithPower, Wobble), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
                     }
                     batPlayer.power = 0;
                     batPlayer.isInSweetSpot = false;
@@ -140,6 +134,7 @@ namespace Baseball.Content.Items.Weapons
 
         /// <summary>
         /// Can be overriden to implement special behavior on sweet spot hit.
+        /// Default fires a ball without wobble factor
         /// </summary>
         /// <param name="source">Source entity. Do not modify</param>
         /// <param name="position">Origin position</param>
@@ -148,7 +143,7 @@ namespace Baseball.Content.Items.Weapons
         /// <param name="damage">Base damage. Set by the bat, can be modified.</param>
         /// <param name="knockback">Base knockback. Set by the bat, can be modified.</param>
         /// <param name="hitPower">Hit power, determined by the power meter</param>
-        public virtual void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, Vector2 wobble, int type, int damage, float knockback, double hitPower)
+        public virtual void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback, double hitPower)
         {
             Vector2 velocityWithPower = new((float)(velocity.X * hitPower * globalVelocityModifier), (float)(velocity.Y * hitPower * globalVelocityModifier));
             Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * hitPower), knockback, source.Player.whoAmI);
@@ -167,6 +162,22 @@ namespace Baseball.Content.Items.Weapons
             else Item.useAmmo = AmmoID.None;
 
             return false; // override default
+        }
+
+        /// <summary>
+        /// Helper method for applying wobble to shots. Wobble needs to be pretty big to do much.
+        /// </summary>
+        /// <param name="velocity">Original velocity vector</param>
+        /// <param name="wobbleRange">Wobble range. 0 is no wobble.</param>
+        /// <returns>the wobbled velocity vector</returns>
+        public static Vector2 ApplyWobble(Vector2 velocity, double wobbleRange)
+        {
+            Random rand = new();
+            float magnitude = velocity.Length();
+            velocity.X += (float)((rand.NextDouble() - 0.5d) * wobbleRange);
+            velocity.Y += (float)((rand.NextDouble() - 0.5d) * wobbleRange);
+            velocity.Normalize();
+            return velocity * magnitude;
         }
     }
 }
