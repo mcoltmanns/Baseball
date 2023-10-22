@@ -1,3 +1,4 @@
+using System;
 using Baseball.Common.Players;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -57,6 +58,12 @@ namespace Baseball.Content.Items.Weapons
         /// First value is start of the range, second value is end of range (both inclusive)
         /// </summary>
         public abstract (double, double) SweetSpotRange { get; }
+        /// <summary>
+        /// "Wobble factor" for this bat. 0 is no wobble
+        /// </summary>
+        public abstract double Wobble { get; }
+
+        private Random rand;
 
         public override void SetDefaults()
         {
@@ -76,6 +83,8 @@ namespace Baseball.Content.Items.Weapons
 
             Item.shoot = ProjectileID.PurificationPowder; // ProjectileID.PurificationPowder (10) is convention. set to 0 for no shooting
             Item.useAmmo = AmmoId;
+
+            rand = new Random();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
@@ -100,16 +109,17 @@ namespace Baseball.Content.Items.Weapons
                 {
                     batPlayer.isFirstShot = true;
                     batPlayer.isCalibratingPower = false;
+                    Vector2 wobble = new((float)(rand.NextDouble() * Wobble), (float)(rand.NextDouble() * Wobble)); // how much to deviate?
                     // in sweet spot
                     if(batPlayer.power >= SweetSpotRange.Item1 && batPlayer.power <= SweetSpotRange.Item2)
                     {
-                        SweetSpot(source, position, velocity, type, damage, knockback, batPlayer.power);
+                        SweetSpot(source, position, velocity, wobble, type, damage, knockback, batPlayer.power);
                     }
                     // missed sweet spot
                     else
                     {
                         Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI);
+                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower + wobble, type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
                     }
                     batPlayer.power = 0;
                     batPlayer.isInSweetSpot = false;
@@ -128,7 +138,7 @@ namespace Baseball.Content.Items.Weapons
         /// <param name="damage">Base damage. Set by the bat, can be modified.</param>
         /// <param name="knockback">Base knockback. Set by the bat, can be modified.</param>
         /// <param name="hitPower">Hit power, determined by the power meter</param>
-        public virtual void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback, double hitPower)
+        public virtual void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, Vector2 wobble, int type, int damage, float knockback, double hitPower)
         {
             Vector2 velocityWithPower = new((float)(velocity.X * hitPower * globalVelocityModifier), (float)(velocity.Y * hitPower * globalVelocityModifier));
             Projectile.NewProjectile(source, source.Player.Center, velocityWithPower, type, (int)(damage * hitPower), knockback, source.Player.whoAmI);

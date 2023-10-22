@@ -78,6 +78,11 @@ namespace Baseball.Content.UI
             for(int i = 0; i < stopAt; i++){
                 spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(left + i, fillArea.Y, 1, fillArea.Height), Color.Lerp(gradientGreen, gradientRed, (float)i / (right - left))); // lerp relative to total fill area, not just area to fill
             }
+
+            // draw sweet spot bars
+            // TODO - these display incorrectly when equipping a bat for the first time
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(left + (int)((right - left) * modPlayer.sweetSpotRange.Item1), fillArea.Y, 1, fillArea.Height), Color.Blue);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(left + (int)((right - left) * modPlayer.sweetSpotRange.Item2), fillArea.Y, 1, fillArea.Height), Color.Blue);
         }
 
         public override void Update(GameTime gameTime)

@@ -1,7 +1,4 @@
-using Baseball.Content.Items.Weapons;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace Baseball.Common.Players
