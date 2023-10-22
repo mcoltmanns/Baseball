@@ -1,6 +1,7 @@
 using System;
 using Baseball.Common.Players;
 using Microsoft.Xna.Framework;
+using Steamworks;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -87,8 +88,17 @@ namespace Baseball.Content.Items.Weapons
             rand = new Random();
         }
 
+        public override void OnConsumeAmmo(Item ammo, Player player)
+        {
+            var batPlayer = Main.LocalPlayer.GetModPlayer<BatPlayer>(); // despite what it looks like, this cannot be a class field. compiler does not like that at all
+            // only consume on second shot, when in ranged mode
+            if(!batPlayer.isFirstShot && batPlayer.isInRangedMode) base.OnConsumeAmmo(ammo, player);
+            else ammo.stack++; // otherwise increment ammo stack by 1 (keeps ammo the same)
+        }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            //TODO right now we consume 2 ammo
             if(Main.myPlayer == player.whoAmI) // multiplayer safety. only the owner of the projectile should spawn it. still unclear on how this works! (projectiles aren't synced until after spawn maybe?)
             // if you want to spawn a projectile from an npc, check if(Main.netMode != NetmodeID.MultiplayerClient) - spawns the projectile only on the server's instance
             {

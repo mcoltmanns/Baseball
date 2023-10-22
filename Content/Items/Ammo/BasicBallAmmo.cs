@@ -1,6 +1,4 @@
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace Baseball.Content.Items.Ammo
@@ -13,6 +11,7 @@ namespace Baseball.Content.Items.Ammo
             Item.shoot = ModContent.ProjectileType<Projectiles.BasicBall>();
             Item.maxStack = Item.CommonMaxStack;
             Item.shootSpeed = 16f;
+            Item.consumable = true;
         }
     }
 }
