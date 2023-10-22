@@ -1,13 +1,15 @@
+using System;
 using Baseball.Content.Items.Ammo;
 using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria;
 
-namespace Baseball.Content.Items.Weapons{
-    public class CorkedBat : Bat
+namespace Baseball.Content.Items.Weapons
+{
+    public class Broomstick : Bat
     {
         public override double PowerMeterRate => 1;
 
@@ -29,15 +31,19 @@ namespace Baseball.Content.Items.Weapons{
 
         public override (double, double) SweetSpotRange => (0.8, 1); //TODO: balance me!
 
-        public override double Wobble => 0.25; //TODO: balance me!
+        public override double Wobble => 0.1; //TODO: balance me!
+
+        public double breakageChance = 0.25; // what are the chances of breaking your broomstick when you hit the sweet spot?
 
         public override void SweetSpot(EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback, double hitPower)
         {
-            hitPower *= 2;
-            // powerful, inaccurate shot.
-            //TODO: strong tests, make sure it really works
-            Vector2 velocityWithPower = new((float)(velocity.X * hitPower * globalVelocityModifier), (float)(velocity.Y * hitPower * globalVelocityModifier));
-            Projectile.NewProjectile(source, source.Player.Center, ApplyWobble(velocityWithPower, Wobble * 1000), type, (int)(damage * hitPower), knockback, source.Player.whoAmI); // factor in wobble!
+            Random rand = new();
+            if(rand.NextDouble() <= breakageChance)
+            {
+                Item.consumable = true;
+                //TODO: play special sound on break
+            }
+            base.SweetSpot(source, position, ApplyWobble(velocity, Wobble), type, damage, knockback, hitPower);
         }
     }
 }

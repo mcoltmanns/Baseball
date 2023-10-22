@@ -45,6 +45,11 @@ Items: {
 		DisplayName: Corked Bat
 		Tooltip: ""
 	}
+
+	Broomstick: {
+		DisplayName: Broomstick
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
