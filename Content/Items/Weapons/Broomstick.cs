@@ -40,10 +40,14 @@ namespace Baseball.Content.Items.Weapons
             Random rand = new();
             if(rand.NextDouble() <= breakageChance)
             {
-                Item.consumable = true;
+                Item.consumable = true; // make the item consumable
                 //TODO: play special sound on break
+                for(int i = 0; i < 10; i++)
+                {
+                    Dust.NewDust(position, source.Player.width, source.Player.height, DustID.WoodFurniture); // spawn some dust particles
+                }
             }
-            base.SweetSpot(source, position, ApplyWobble(velocity, Wobble), type, damage, knockback, hitPower);
+            base.SweetSpot(source, position, velocity.RotatedByRandom(Wobble), type, damage, knockback, hitPower);
         }
     }
 }

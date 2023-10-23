@@ -123,7 +123,7 @@ namespace Baseball.Content.Items.Weapons
                     else
                     {
                         Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                        Projectile.NewProjectile(source, source.Player.Center, ApplyWobble(velocityWithPower, Wobble), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
+                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(Wobble), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
                     }
                     batPlayer.power = 0;
                     batPlayer.isInSweetSpot = false;
@@ -162,22 +162,6 @@ namespace Baseball.Content.Items.Weapons
             else Item.useAmmo = AmmoID.None;
 
             return false; // override default
-        }
-
-        /// <summary>
-        /// Helper method for applying wobble to shots. Wobble needs to be pretty big to do much.
-        /// </summary>
-        /// <param name="velocity">Original velocity vector</param>
-        /// <param name="wobbleRange">Wobble range. 0 is no wobble.</param>
-        /// <returns>the wobbled velocity vector</returns>
-        public static Vector2 ApplyWobble(Vector2 velocity, double wobbleRange)
-        {
-            Random rand = new();
-            float magnitude = velocity.Length();
-            velocity.X += (float)((rand.NextDouble() - 0.5d) * wobbleRange);
-            velocity.Y += (float)((rand.NextDouble() - 0.5d) * wobbleRange);
-            velocity.Normalize();
-            return velocity * magnitude;
         }
     }
 }

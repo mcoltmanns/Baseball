@@ -18,6 +18,6 @@ namespace Baseball.Content.Items.Weapons
         public override int Rarity => ItemRarityID.Green;
         public override Terraria.Audio.SoundStyle UseSoundId => SoundID.Item1;
         public override (double, double) SweetSpotRange => (0.75, 1);
-        public override double Wobble => 10;
+        public override double Wobble => 0.25;
     }
 }

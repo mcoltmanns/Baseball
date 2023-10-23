@@ -37,7 +37,7 @@ namespace Baseball.Content.Items.Weapons{
             // powerful, inaccurate shot.
             //TODO: strong tests, make sure it really works
             Vector2 velocityWithPower = new((float)(velocity.X * hitPower * globalVelocityModifier), (float)(velocity.Y * hitPower * globalVelocityModifier));
-            Projectile.NewProjectile(source, source.Player.Center, ApplyWobble(velocityWithPower, Wobble * 1000), type, (int)(damage * hitPower), knockback, source.Player.whoAmI); // factor in wobble!
+            Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(Wobble * 4), type, (int)(damage * hitPower), knockback, source.Player.whoAmI); // factor in wobble!
         }
     }
 }
