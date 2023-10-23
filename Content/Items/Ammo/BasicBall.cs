@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace Baseball.Content.Items.Ammo
 {
-    public class BasicBallAmmo : ModItem
+    public class BasicBall : ModItem
     {
         public override void SetDefaults()
         {

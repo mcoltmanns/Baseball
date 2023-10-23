@@ -41,6 +41,11 @@ Items: {
 		Tooltip: ""
 	}
 
+	BasicBall: {
+		DisplayName: Basic Ball
+		Tooltip: ""
+	}
+
 	CorkedBat: {
 		DisplayName: Corked Bat
 		Tooltip: ""
@@ -50,12 +55,24 @@ Items: {
 		DisplayName: Broomstick
 		Tooltip: ""
 	}
+
+	LocustBait: {
+		DisplayName: Locust Bait
+		Tooltip: ""
+	}
+
+	CricketBat: {
+		DisplayName: Cricket Bat
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
 	Ball.DisplayName: Ball
 	HostileBall.DisplayName: Hostile Ball
 	BasicBall.DisplayName: Basic Ball
+	Locust.DisplayName: Locust
+	LocustBait.DisplayName: Locust Bait
 }
 
 UI.BatShotMeter: Mods.Baseball.UI.BatShotMeter

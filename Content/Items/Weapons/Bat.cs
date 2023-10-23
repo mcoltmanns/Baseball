@@ -1,5 +1,6 @@
 using System;
 using Baseball.Common.Players;
+using Baseball.Content.Items.Ammo;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -11,6 +12,7 @@ namespace Baseball.Content.Items.Weapons
     /*
     Abstract class for bat shooting behavior. Handles all the communication with ShotPowerPlayer and ShotPowerMeter.
     Each new bat must implement this class. Defaults, recipes, and other behaviors are implemented by overriding the appropriate ModItem method.
+    For an example implementation, see Weapons/BasicBat.cs
     */
     public abstract class Bat : ModItem {
         public double globalVelocityModifier = 1;
@@ -19,68 +21,40 @@ namespace Baseball.Content.Items.Weapons
         /// <summary>
         /// Oscillation speed of this bat's power meter in units/second.
         /// </summary>
-        public abstract double PowerMeterRate { get; }
-        /// <summary>
-        /// The ammoId of the ammunition this bat will shoot in ranged mode. Should be provided via ModContent.ItemType<...>();
-        /// </summary>
-        public abstract int AmmoId { get; }
-        /// <summary>
-        /// This bat's use cooldown. This bat's animation time is equal to its use time.
-        /// </summary>
-        public abstract int UseTime { get; }
-        /// <summary>
-        /// This bat's base damage in melee mode.
-        /// </summary>
-        public abstract int Damage { get; }
-        /// <summary>
-        /// This bat's knockback in melee mode. Maximum is 20.
-        /// </summary>
-        public abstract int Knockback { get; }
-        /// <summary>
-        /// This bat's base crit chance in melee mode. Remember that the player already has a crit chance of 4!
-        /// </summary>
-        public abstract int CritChance { get; }
-        /// <summary>
-        /// This bat's price in copper coins. 1 platinum = 100 gold = 10,000 silver = 1,000,000 copper.
-        /// </summary>
-        public abstract int Price { get; }
-        /// <summary>
-        /// Rarity of this bat. Should be set to one of the values in ItemRarityID.
-        /// </summary>
-        public abstract int Rarity { get; }
-        /// <summary>
-        /// Sound this bat makes when used. Should return either an existing SoundID entry or a new Terraria.Audio.SoundStyle for custom sounds. 
-        /// Return null for default behavior
-        /// </summary>
-        public abstract Terraria.Audio.SoundStyle UseSoundId { get; }
+        public double powerMeterRate = 1;
         /// <summary>
         /// Location of this bat's sweet spot range. Hitting a shot in the sweet spot gives special effects.
         /// First value is start of the range, second value is end of range (both inclusive)
         /// </summary>
-        public abstract (double, double) SweetSpotRange { get; }
+        public (double, double) sweetSpot = (0.75, 1);
         /// <summary>
-        /// "Wobble factor" for this bat. 0 is no wobble
+        /// "Wobble factor" for this bat. 0 is no wobble. Wobble scales with hit power.
         /// </summary>
-        public abstract double Wobble { get; }
+        public double wobble = 0.25;
+        /// <summary>
+        /// Ammo that this bat shoots.
+        /// </summary>
+        public int ammoID = 0;
 
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
             Item.holdStyle = ItemHoldStyleID.HoldGuitar; // guitar looks pretty solid
-            Item.useTime = UseTime; // cooldown
-            Item.useAnimation = UseTime; // animation time - should be equal to cooldown
+            Item.useTime = 20; // cooldown
+            Item.useAnimation = 20; // animation time - should be equal to cooldown
             Item.autoReuse = true;
 
             Item.DamageType = DamageClass.Melee;
-            Item.damage = Damage;
-            Item.knockBack = Knockback;
-            Item.crit = CritChance;
+            Item.damage = 50;
+            Item.knockBack = 6;
+            Item.crit = 0;
 
-            Item.value = Item.buyPrice(copper: Price);
-            Item.rare = Rarity;
+            Item.value = Item.buyPrice(copper: 10000);
+            Item.rare = ItemRarityID.Green;
 
             Item.shoot = ProjectileID.PurificationPowder; // ProjectileID.PurificationPowder (10) is convention. set to 0 for no shooting
-            Item.useAmmo = AmmoId;
+            ammoID = ModContent.ItemType<BasicBall>();
+            Item.useAmmo = ammoID;
         }
 
         public override void OnConsumeAmmo(Item ammo, Player player)
@@ -103,8 +77,8 @@ namespace Baseball.Content.Items.Weapons
 
                 if(batPlayer.isFirstShot) // start the power getting loop, but don't shoot
                 {
-                    batPlayer.sweetSpotRange = SweetSpotRange;
-                    batPlayer.powerRate = PowerMeterRate;
+                    batPlayer.sweetSpotRange = sweetSpot;
+                    batPlayer.powerRate = powerMeterRate;
                     batPlayer.isFirstShot = false;
                     batPlayer.power = 0;
                     // power loop handled by the shotPowerMeter - via isCalibratingPower as flag
@@ -115,7 +89,7 @@ namespace Baseball.Content.Items.Weapons
                     batPlayer.isFirstShot = true;
                     batPlayer.isCalibratingPower = false;
                     // in sweet spot
-                    if(batPlayer.power >= SweetSpotRange.Item1 && batPlayer.power <= SweetSpotRange.Item2)
+                    if(batPlayer.power >= sweetSpot.Item1 && batPlayer.power <= sweetSpot.Item2)
                     {
                         SweetSpot(source, position, velocity, type, damage, knockback, batPlayer.power);
                     }
@@ -123,7 +97,7 @@ namespace Baseball.Content.Items.Weapons
                     else
                     {
                         Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(Wobble), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble!
+                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(wobble * batPlayer.power), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble! - scale based on hit power
                     }
                     batPlayer.power = 0;
                     batPlayer.isInSweetSpot = false;
@@ -158,7 +132,7 @@ namespace Baseball.Content.Items.Weapons
 
             Item.autoReuse = !batPlayer.isInRangedMode; // don't want auto reuse if in ranged mode, want it in melee mode
 
-            if(batPlayer.isInRangedMode) Item.useAmmo = AmmoId; // if in ranged mode, use ammo. if not, don't require ammo
+            if(batPlayer.isInRangedMode) Item.useAmmo = ammoID; // if in ranged mode, use ammo. if not, don't require ammo
             else Item.useAmmo = AmmoID.None;
 
             return false; // override default
