@@ -67,7 +67,6 @@ namespace Baseball.Content.Items.Weapons
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            //TODO right now we consume 2 ammo
             if(Main.myPlayer == player.whoAmI) // multiplayer safety. only the owner of the projectile should spawn it. still unclear on how this works! (projectiles aren't synced until after spawn maybe?)
             // if you want to spawn a projectile from an npc, check if(Main.netMode != NetmodeID.MultiplayerClient) - spawns the projectile only on the server's instance
             {
@@ -89,7 +88,7 @@ namespace Baseball.Content.Items.Weapons
                     batPlayer.isFirstShot = true;
                     batPlayer.isCalibratingPower = false;
                     // in sweet spot
-                    if(batPlayer.power >= sweetSpot.Item1 && batPlayer.power <= sweetSpot.Item2)
+                    if(batPlayer.power >= Math.Min(sweetSpot.Item1, sweetSpot.Item2) && batPlayer.power <= Math.Max(sweetSpot.Item1, sweetSpot.Item2)) // the min/max ideally wouldn't be needed but is safer - in case sweet spot limits ever get mixed up
                     {
                         SweetSpot(source, position, velocity, type, damage, knockback, batPlayer.power);
                     }
@@ -97,7 +96,7 @@ namespace Baseball.Content.Items.Weapons
                     else
                     {
                         Vector2 velocityWithPower = new((float)(velocity.X * batPlayer.power * globalVelocityModifier), (float)(velocity.Y * batPlayer.power * globalVelocityModifier));
-                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(wobble * batPlayer.power), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI); // factor in wobble! - scale based on hit power
+                        Projectile.NewProjectile(source, source.Player.Center, velocityWithPower.RotatedByRandom(wobble * batPlayer.power), type, (int)(damage * batPlayer.power), knockback, source.Player.whoAmI, ai0:0); // factor in wobble! - scale based on hit power
                     }
                     batPlayer.power = 0;
                     batPlayer.isInSweetSpot = false;
@@ -113,7 +112,7 @@ namespace Baseball.Content.Items.Weapons
         /// <param name="source">Source entity. Do not modify</param>
         /// <param name="position">Origin position</param>
         /// <param name="velocity">Origin velocity, e.g. if the player was moving</param>
-        /// <param name="type">Do not modify</param>
+        /// <param name="type">Projectile type. Shouldn't need to be modified</param>
         /// <param name="damage">Base damage. Set by the bat, can be modified.</param>
         /// <param name="knockback">Base knockback. Set by the bat, can be modified.</param>
         /// <param name="hitPower">Hit power, determined by the power meter</param>
