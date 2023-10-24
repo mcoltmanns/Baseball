@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,11 +12,11 @@ namespace Baseball.Content.Projectiles
     public class LocustBait : ModProjectile
     {
         private readonly float bounceRestitution = 0.75f;
-        private readonly int framesToLocusts = 10; // assume 60fps
+        private readonly int framesToLocusts = 1 * 60; // assume 60fps
 
         public override void SetDefaults()
         {
-            Projectile.arrow = true;
+            //Projectile.arrow = true;
             Projectile.width = 10;
             Projectile.height = 10;
             Projectile.friendly = true;
@@ -22,6 +24,8 @@ namespace Baseball.Content.Projectiles
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.penetrate = -1;
             Projectile.tileCollide = true;
+            Projectile.aiStyle = 0;
+            AIType = 0;
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -44,27 +48,28 @@ namespace Baseball.Content.Projectiles
 			return false;
         }
 
+        // sweet spot flag is ai[0] - when 1, we hit the sweet spot
+        // ai[1] is locust timer
         public override void AI()
         {
-            //FIXME: something very bad here.... makes the ui disappear and game stop taking input
-            /*Projectile.ai[0] += 1f;
-            if(Projectile.ai[0] >= framesToLocusts)
-            {
-                //TODO: LOCUSTS!!!!
-                if(Projectile.owner == Main.myPlayer)
-                {
-                    // only spawn locusts if we are the main player
-                    for(int i = 0; i < 100; i++)
-                    {
-                        //Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position, Projectile.velocity, ModContent.ProjectileType<Locust>(), 20, 0f, Projectile.owner, 0f, 0f);
-                    }
-                }
-                Projectile.Kill();
-            }*/
+            Player owner = Main.player[Projectile.owner];
 
-            // gravity
-            Projectile.velocity.Y = Projectile.velocity.Y + 0.2f; // tweak this value - 0.1 is arrows, 0.4 is knives
-            if(Projectile.velocity.Y > 16f) Projectile.velocity.Y = 16f; // terminal velocity - cannot be greater than 16 or we travel thru blocks
+            Projectile.netUpdate = true;
+
+            Projectile.velocity.Y += 0.2f; // gravity
+            if(Projectile.velocity.Y > 16) Projectile.velocity.Y = 16; // terminal velocity
+
+            Projectile.ai[1] += 1;
+            if(Projectile.ai[1] >= framesToLocusts)
+            {
+                if(Projectile.ai[0] == 1)
+                {
+                    //LOCUSTS!!
+                    // locusts should probably only happen if main.myplayer == projectile.owner
+                    Mod.Logger.Debug("LOCUSTS!!");
+                    Projectile.Kill();
+                }
+            }
         }
     }
 }
