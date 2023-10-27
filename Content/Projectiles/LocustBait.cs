@@ -21,7 +21,7 @@ namespace Baseball.Content.Projectiles
             Projectile.friendly = true;
             Projectile.hostile = false;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 10;
             Projectile.tileCollide = true;
             Projectile.aiStyle = 0;
             AIType = 0;
@@ -51,6 +51,7 @@ namespace Baseball.Content.Projectiles
 
         // sweet spot flag is ai[0] - when 1, we hit the sweet spot
         // ai[1] is locust timer
+        //TODO: ball lifetime/bounce limit
         public override void AI()
         {
             Projectile.netUpdate = true;
@@ -67,17 +68,17 @@ namespace Baseball.Content.Projectiles
                     // locusts should probably only happen if main.myplayer == projectile.owner
                     if(Main.myPlayer == Projectile.owner)
                     {
-                        Mod.Logger.Debug("LOCUSTS!!");
                         for(int i = 0; i < locustCount; i++)
                         {
                             Vector2 spawnOffset = Vector2.Multiply(Vector2.UnitX.RotatedByRandom(4), (float)(rand.NextDouble() * spawnAreaRadius)); // spawn direction from angle times distance from center
-                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnOffset + Projectile.position, Vector2.Normalize(spawnOffset), ModContent.ProjectileType<Locust>(), 10, 10, Projectile.owner); // TODO: proper damage/knockback vals for locusts
-                            Mod.Logger.Debug("Spawned locust at " + spawnOffset.ToString());
+                            if(Collision.IsWorldPointSolid(Projectile.position + spawnOffset)) i++; // if attempted spawn space is solid, skip
+                            else Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnOffset + Projectile.position, Vector2.Zero, ModContent.ProjectileType<Locust>(), 10, 10, Projectile.owner, Projectile.position.X, Projectile.position.Y); // TODO: proper damage/knockback vals for locusts
                         }
                     }
                     Projectile.Kill();
                 }
             }
+            Projectile.rotation = (float)Math.Atan(Projectile.velocity.Y / Projectile.velocity.X);
         }
     }
 }
