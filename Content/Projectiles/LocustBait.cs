@@ -1,10 +1,6 @@
 using System;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace Baseball.Content.Projectiles
@@ -13,6 +9,9 @@ namespace Baseball.Content.Projectiles
     {
         private readonly float bounceRestitution = 0.75f;
         private readonly int framesToLocusts = 1 * 60; // assume 60fps
+        private readonly int locustCount = 25; // maybe this should depend on player's mana?
+        private Random rand;
+        private readonly double spawnAreaRadius = 100;
 
         public override void SetDefaults()
         {
@@ -26,6 +25,8 @@ namespace Baseball.Content.Projectiles
             Projectile.tileCollide = true;
             Projectile.aiStyle = 0;
             AIType = 0;
+
+            rand = new Random();
         }
 
         public override bool OnTileCollide(Vector2 oldVelocity)
@@ -52,8 +53,6 @@ namespace Baseball.Content.Projectiles
         // ai[1] is locust timer
         public override void AI()
         {
-            Player owner = Main.player[Projectile.owner];
-
             Projectile.netUpdate = true;
 
             Projectile.velocity.Y += 0.2f; // gravity
@@ -66,7 +65,16 @@ namespace Baseball.Content.Projectiles
                 {
                     //LOCUSTS!!
                     // locusts should probably only happen if main.myplayer == projectile.owner
-                    Mod.Logger.Debug("LOCUSTS!!");
+                    if(Main.myPlayer == Projectile.owner)
+                    {
+                        Mod.Logger.Debug("LOCUSTS!!");
+                        for(int i = 0; i < locustCount; i++)
+                        {
+                            Vector2 spawnOffset = Vector2.Multiply(Vector2.UnitX.RotatedByRandom(4), (float)(rand.NextDouble() * spawnAreaRadius)); // spawn direction from angle times distance from center
+                            Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnOffset + Projectile.position, Vector2.Normalize(spawnOffset), ModContent.ProjectileType<Locust>(), 10, 10, Projectile.owner); // TODO: proper damage/knockback vals for locusts
+                            Mod.Logger.Debug("Spawned locust at " + spawnOffset.ToString());
+                        }
+                    }
                     Projectile.Kill();
                 }
             }
