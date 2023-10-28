@@ -1,6 +1,9 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace Baseball.Content.Projectiles
@@ -12,6 +15,11 @@ namespace Baseball.Content.Projectiles
         private readonly float separationDist = 10;
         private readonly float boidsRange = 400;
         private readonly float maxSpeed = 16f; // should not be greater than 16!
+        private readonly int lifetime = 15 * 60; // lifetime in frames
+        private readonly int spawnParticle = Terraria.ID.DustID.Sluggy; //TODO: finalize
+        private readonly int deathParticle = Terraria.ID.DustID.Sluggy;
+        private readonly Terraria.Audio.SoundStyle spawnSound = Terraria.ID.SoundID.Item1; //TODO: finalize
+        private readonly Terraria.Audio.SoundStyle deathSound = Terraria.ID.SoundID.Item1;
 
         public override void SetDefaults()
         {
@@ -27,7 +35,7 @@ namespace Baseball.Content.Projectiles
             AIType = 0;
         }
 
-        // target.X is ai[0], Y is ai[1]
+        // ai[0] is general purpose frame timer
         //TODO: locust lifetimes
         public override void AI()
         {
@@ -69,9 +77,9 @@ namespace Baseball.Content.Projectiles
                     }
                 }
                 // Make all adjustments with velocity, and clamp velocity to 16! this prevents phasing through blocks
-                swarmCenter = (swarmCenter / boidsCount - Projectile.Center) / 100f;
-                avgRelativeVelocity = (avgRelativeVelocity / boidsCount - Projectile.velocity) / 50f;
-                Projectile.velocity += swarmCenter + sep + avgRelativeVelocity;
+                swarmCenter = swarmCenter / boidsCount - Projectile.Center;
+                avgRelativeVelocity = avgRelativeVelocity / boidsCount - Projectile.velocity;
+                Projectile.velocity += swarmCenter / 100f + sep / 1f + avgRelativeVelocity / 25f;
 
                 if(Projectile.velocity.LengthSquared() > maxSpeed * maxSpeed) Projectile.velocity /= maxSpeed;//new Vector2(Projectile.velocity.X / maxSpeed, Projectile.velocity.Y / maxSpeed);
 
@@ -80,6 +88,21 @@ namespace Baseball.Content.Projectiles
             }
 
             Projectile.rotation = (float)Math.Atan(Projectile.velocity.Y / Projectile.velocity.X);
+
+            if(Projectile.ai[0] == lifetime) Projectile.Kill();
+            Projectile.ai[0]++;
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+            for(int i = 0; i < 15; i++) Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, deathParticle);
+            SoundEngine.PlaySound(deathSound);
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            for(int i = 0; i < 15; i++) Dust.NewDust(Projectile.Center, Projectile.width, Projectile.height, spawnParticle);
+            SoundEngine.PlaySound(spawnSound);
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)

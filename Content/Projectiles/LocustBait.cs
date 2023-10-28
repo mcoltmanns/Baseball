@@ -45,6 +45,7 @@ namespace Baseball.Content.Projectiles
             }
 
             Projectile.damage = (int)(Projectile.damage * bounceRestitution);
+            Projectile.penetrate --;
 
 			return false;
         }
@@ -72,7 +73,10 @@ namespace Baseball.Content.Projectiles
                         {
                             Vector2 spawnOffset = Vector2.Multiply(Vector2.UnitX.RotatedByRandom(4), (float)(rand.NextDouble() * spawnAreaRadius)); // spawn direction from angle times distance from center
                             if(Collision.IsWorldPointSolid(Projectile.position + spawnOffset)) i++; // if attempted spawn space is solid, skip
-                            else Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnOffset + Projectile.position, Vector2.Zero, ModContent.ProjectileType<Locust>(), 10, 10, Projectile.owner, Projectile.position.X, Projectile.position.Y); // TODO: proper damage/knockback vals for locusts
+                            else 
+                            {
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), spawnOffset + Projectile.position, Vector2.Zero, ModContent.ProjectileType<Locust>(), 10, 10, Projectile.owner, 0); // TODO: proper damage/knockback vals for locusts
+                            }
                         }
                     }
                     Projectile.Kill();
