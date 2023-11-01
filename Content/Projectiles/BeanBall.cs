@@ -35,14 +35,16 @@ namespace Baseball.Content.Projectiles
 			}
 			else {
 				if (Projectile.ai[2] == 0) {
+					float curDist = 480f;
 					Projectile.velocity.Y = Projectile.velocity.Y + 0.1f;
 					for(int i = 0; i < 200; i++) {
 						NPC target = Main.npc[i];
-						if(!target.friendly && target.active) {
+						if(target.CanBeChasedBy()) {
 							float shootToX = target.position.X + (float)target.width * 0.5f - Projectile.Center.X;
            					float shootToY = target.position.Y - Projectile.Center.Y;
            					float distance = (float)System.Math.Sqrt((double)(shootToX * shootToX + shootToY * shootToY));
-							if (distance < 480f) {
+							if (distance < curDist) {
+								curDist = distance;
 								Projectile.ai[2] = 1;
 								Projectile.ai[1] = i;
 							}
