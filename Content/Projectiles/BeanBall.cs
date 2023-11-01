@@ -28,14 +28,14 @@ namespace Baseball.Content.Projectiles
 		public override void AI() 
 		{
 			Projectile.ai[0] += 1f; // Use a timer to wait 15 ticks before applying gravity.
-			if (Projectile.ai[0] < 60f)
+			if (Projectile.ai[0] < 50f)
 			{
 				Projectile.ai[2] = 0;
-				Projectile.ai[0] = 60f;
 				Projectile.velocity.Y = Projectile.velocity.Y + 0.1f;
 			}
 			else {
 				if (Projectile.ai[2] == 0) {
+					Projectile.velocity.Y = Projectile.velocity.Y + 0.1f;
 					for(int i = 0; i < 200; i++) {
 						NPC target = Main.npc[i];
 						if(!target.friendly && target.active) {
@@ -56,15 +56,23 @@ namespace Baseball.Content.Projectiles
 					float shootToX = target.position.X + (float)target.width * 0.5f - Projectile.Center.X;
            			float shootToY = target.position.Y - Projectile.Center.Y;
            			float distance = (float)System.Math.Sqrt((double)(shootToX * shootToX + shootToY * shootToY));
-					distance = 3f / distance;
-   
-               		//Multiply the distance by a multiplier if you wish the projectile to have go faster
-               		shootToX *= distance * 5;
-               		shootToY *= distance * 5;
+
+               		shootToX /= distance;
+               		shootToY /= distance;
 
                		//Set the velocities to the shoot values
-               		Projectile.velocity.X = shootToX;
-               		Projectile.velocity.Y = shootToY;
+               		Projectile.velocity.X += shootToX;
+               		Projectile.velocity.Y += shootToY;
+					float newSpeed = (float)System.Math.Sqrt((double)(Projectile.velocity.X * Projectile.velocity.X + Projectile.velocity.Y * Projectile.velocity.Y));
+					
+					float multiplier = 1 - (shootToX * Projectile.velocity.X + shootToY * Projectile.velocity.Y) / newSpeed;
+					float strength = 0.3f * (3 - Math.Min(2, distance / 40));
+					Projectile.velocity.X += strength * multiplier * (shootToX -  Projectile.velocity.X);
+               		Projectile.velocity.Y += strength * multiplier * (shootToY -  Projectile.velocity.Y);
+					if (newSpeed > 25f) {
+						Projectile.velocity.X *= 25 / newSpeed;
+						Projectile.velocity.Y *= 25 / newSpeed;
+					}
 				}
 			}
 		}
