@@ -65,6 +65,21 @@ Items: {
 		DisplayName: Curve Ball Pitch
 		Tooltip: ""
 	}
+
+	CutterPitch: {
+		DisplayName: Cutter Pitch
+		Tooltip: ""
+	}
+
+	ForkBallPitch: {
+		DisplayName: Fork Ball Pitch
+		Tooltip: ""
+	}
+
+	TwoSeamerPitch: {
+		DisplayName: Two Seamer Pitch
+		Tooltip: ""
+	}
 }
 
 Projectiles: {
@@ -76,6 +91,9 @@ Projectiles: {
 	Riser.DisplayName: Riser
 	BeanBall.DisplayName: Bean Ball
 	CurveBall.DisplayName: Curve Ball
+	CutterBall.DisplayName: Cutter Ball
+	ForkBall.DisplayName: Fork Ball
+	TwoSeamer.DisplayName: Two Seamer
 }
 
 UI.BatShotMeter: Mods.Baseball.UI.BatShotMeter
